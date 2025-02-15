@@ -31,7 +31,7 @@ green_pressed = 0
 red_pressed = 0
         
 #Use your Phidgets | This code will turn on the LED when the matching button is pressed and turns off the LED when the matching button is released. The sleep function slows down the loop so the button state is only checked every 150ms.
-while(True):
+while(1):
     if(redButton.getState()):
          red_pressed+=1
          redLED.setState(True)
@@ -39,6 +39,7 @@ while(True):
         redLED.setState(False)
     if(greenButton.getState()):
         green_pressed+=1
+        greenLED.setState(True)
     else:
         greenLED.setState(False)
     if(green_pressed == 10 or red_pressed == 10):
