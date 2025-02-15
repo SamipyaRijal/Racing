@@ -19,4 +19,4 @@ def get_slider_value():
 if __name__ == "__main__":
     while True:
         print("Slider Value: " + str(get_slider_value()))
-        time.sleep(0.25)
+        time.sleep(0.1)

@@ -1,6 +1,15 @@
 import pygame
 import sys
 import random
+import os
+
+# Add the path to the folder containing slider_testing.py
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'Electrical Code', 'Testing'))
+
+# Import the get_slider_value function from slider_testing.py
+from slider_testing import get_slider_value
+
+
 
 # Initialize Pygame
 pygame.init()
@@ -42,13 +51,22 @@ class Car:
         self.height = car_height
         self.speed = 5  # Speed of the car (this will control the obstacles' speed)
 
-    def move_up(self):
-        if self.y > 0:  # Prevent car from going off the screen
-            self.y -= 5
+    def y_position(self):
+        joystick_ratio = HEIGHT
+        self.y = get_slider_value() * joystick_ratio
 
-    def move_down(self):
-        if self.y < HEIGHT - self.height:  # Prevent car from going off the screen
-            self.y += 5
+
+#----------------------------Moving FUncs-----------------------------------#
+
+    # def move_up(self):
+    #     if self.y > 0:  # Prevent car from going off the screen
+    #         self.y -= 5
+
+    # def move_down(self):
+    #     if self.y < HEIGHT - self.height:  # Prevent car from going off the screen
+    #         self.y += 5
+
+#---------------------------------------------------------------#
 
     def draw(self):
         screen.blit(car_image, (self.x, self.y))  # Draw the resized car image at the current position
@@ -102,14 +120,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
     # Get the keys pressed by the player
     keys = pygame.key.get_pressed()
 
-    # Move the car using W and S keys (up and down)
-    if keys[pygame.K_w]:  # Move the car up with W
-        car.move_up()
-    if keys[pygame.K_s]:  # Move the car down with S
-        car.move_down()
+    car.y_position()
+
+    ### ------------------------ HEAD --------------------------------- ###
+
+    # # Move the car using W and S keys (up and down)
+    # if keys[pygame.K_w]:  # Move the car up with W
+    #     car.move_up()
+    # if keys[pygame.K_s]:  # Move the car down with S
+    #     car.move_down()
+
+    #---------------------------------------------------------------#
+
 
     # Speed up or slow down the obstacles based on user input (A = faster, D = slower)
     if keys[pygame.K_a]:  # Speed up (A key)
