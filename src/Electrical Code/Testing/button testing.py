@@ -35,27 +35,13 @@ while(1):
     if(redButton.getState()):
          red_pressed+=1
          redLED.setState(True)
+         print("red is pressed")
     else:
         redLED.setState(False)
     if(greenButton.getState()):
         green_pressed+=1
         greenLED.setState(True)
+        print("green is pressed")
     else:
         greenLED.setState(False)
-    if(green_pressed == 10 or red_pressed == 10):
-         break
     time.sleep(0.15)
-
-if(red_pressed==10):
-    for i in range(0,11):
-        redLED.setState(True)
-        time.sleep(1)
-        redLED.setState(False)
-        time.sleep(1)
-        
-if(green_pressed==10):
-    for i in range(0,11):
-        greenLED.setState(True)
-        time.sleep(1)
-        greenLED.setState(False)
-        time.sleep(1)
