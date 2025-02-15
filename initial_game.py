@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'Electrical Code'
 
 # Import the get_slider_value function from slider_testing.py
 from slider_testing import get_slider_value
-
+from button_testing import getRed_or_Green
 
 
 # Initialize Pygame
@@ -126,7 +126,7 @@ while running:
 
     car.y_position()
 
-    ### ------------------------ HEAD --------------------------------- ###
+    ### ------------------------ Previous Move Code --------------------------------- ###
 
     # # Move the car using W and S keys (up and down)
     # if keys[pygame.K_w]:  # Move the car up with W
@@ -134,14 +134,25 @@ while running:
     # if keys[pygame.K_s]:  # Move the car down with S
     #     car.move_down()
 
-    #---------------------------------------------------------------#
+    # # # Speed up or slow down the obstacles based on user input (A = faster, D = slower)
+    # if keys[pygame.K_a]:  # Speed up (A key)
+    #     car.speed = min(15, car.speed + 0.1)  # Cap speed at 15
+    # if keys[pygame.K_d]:  # Slow down (D key)
+    #     car.speed = max(1, car.speed - 0.1)  # Prevent speed from going below 1
 
+    #--------------------------------------------------------------------------------
+    
+    #------------------------Button Implement--------------------------#
 
-    # Speed up or slow down the obstacles based on user input (A = faster, D = slower)
-    if keys[pygame.K_a]:  # Speed up (A key)
+    button_colour = getRed_or_Green()
+
+    if button_colour == 'green':  # Speed up (A key)
         car.speed = min(15, car.speed + 0.1)  # Cap speed at 15
-    if keys[pygame.K_d]:  # Slow down (D key)
+    elif button_colour == 'red':  # Slow down (D key)
         car.speed = max(1, car.speed - 0.1)  # Prevent speed from going below 1
+
+
+    #------------------------------------------------------------------#
 
     # Dynamically adjust obstacle speed based on car speed
     for obstacle in obstacles:
