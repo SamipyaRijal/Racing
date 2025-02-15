@@ -45,16 +45,15 @@ def fade_in_buttons(score):
     
     alpha = 0  # Start fully transparent
     running = True
-
+    screen.fill(BLUE)
+    display_end_score(score)
     while running:
-        screen.fill(BLUE)
 
         # Keep "RACING!" visible
-        display_end_score(score)
 
         # Increase alpha to fade in
         if alpha < 255:
-            alpha += 5
+            alpha += 10
         play_surface = play_text.copy()
         play_surface.set_alpha(alpha)
 
@@ -69,7 +68,7 @@ def fade_in_buttons(score):
         screen.blit(quit_surface, quit_surface.get_rect(center=quit_button_rect.center))
 
         pygame.display.update()
-        time.sleep(0.01)
+        time.sleep(0.1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
