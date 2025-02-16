@@ -150,6 +150,8 @@ def create_other_car():
 distance_travelled = 0
 list_blocks = []
 
+final_block = WhiteBlock(max_x_position, 100)
+
 while running:
     delta_time = clock.tick(60) / 1000  # Calculate delta time (time in seconds since the last frame)
     
@@ -181,6 +183,7 @@ while running:
         car.speed = max(400, car.speed - 5)  # Prevent speed from going below 200 pixels/s
 
     # Dynamically adjust obstacle speed based on car speed
+    final_block.speed = car.speed
     for block in white_blocks:
         block.speed = car.speed
 
@@ -191,12 +194,13 @@ while running:
         other_car.speed = speed_bg - speed_offset  # Set other cars' speed relative to background
 
     # Move white blocks and remove those that are off the screen
+    final_block.move(delta_time)
     for block in white_blocks[:]:
         block.move(delta_time)
         if block.x + block.width < 0:  # If the block moves off the left side, reset its position
             # Move the block to the right, keeping the same gap between blocks
             block.x = white_blocks[-1].x + white_block_gap
-    list_blocks.append(block for block in white_blocks)
+            
 
 
     # Move the other cars and check for collisions
@@ -233,6 +237,7 @@ while running:
     screen.fill(DARK_GREY, (bg_x + bg_width, 0, WIDTH, HEIGHT))  # Repeat the background for a seamless effect
 
     # Draw the white blocks (scrolling from right to left)
+    final_block.draw()
     for block in white_blocks:
         block.draw()
 
