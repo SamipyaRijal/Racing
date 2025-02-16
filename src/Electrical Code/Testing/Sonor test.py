@@ -11,11 +11,12 @@ distanceSensor = DistanceSensor()
 distanceSensor.openWaitForAttachment(1000)
 
 #Use your Phidgets
-while (True):
-  try:
-    print("Distance: " + str(distanceSensor.getDistance()) + " mm")
-    time.sleep(1)
-  except:
-    print("couldn't read the distance")
-    time.sleep(1)
+if __name__ == "__main__":
+  while (True):
+    try:
+      print("Distance: " + str(distanceSensor.getDistance()) + " mm")
+      time.sleep(1)
+    except:
+      print("couldn't read the distance")
+      time.sleep(1)
   

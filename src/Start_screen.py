@@ -72,6 +72,7 @@ def fade_in_button():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_rect.collidepoint(event.pos):
                     running = False  # Exit loop when Play is clicked
+                    return True
 
 # Run the fade-in/fade-out sequence
 screen.fill(BLUE)
@@ -84,15 +85,15 @@ fade_out_texts(
     [font_large, font_small], 
     0.05
 )
+if __name__ == "__main__":
+    # "RACING!" stays on screen
+    screen.fill(BLUE)
+    racing_text = font_racing.render("RACING!", True, GREEN)
+    screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
+    pygame.display.update()
+    time.sleep(2)  # Short delay before the button appears
 
-# "RACING!" stays on screen
-screen.fill(BLUE)
-racing_text = font_racing.render("RACING!", True, GREEN)
-screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
-pygame.display.update()
-time.sleep(2)  # Short delay before the button appears
+    # Play button fades in
+    fade_in_button()
 
-# Play button fades in
-fade_in_button()
-
-pygame.quit()
+    pygame.quit()

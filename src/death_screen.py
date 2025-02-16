@@ -74,18 +74,26 @@ def fade_in_buttons(score):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # Exit the game when Esc key is pressed
+                    pygame.quit()
+                    return
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
                     running = False  # Exit loop when Play is clicked
+                    return True
                 if quit_button_rect.collidepoint(event.pos):
                     running = False
+                    return False
 
-score = 10  #Replace with a variable that stores speed
 
-display_end_score(score)
-time.sleep(1)
+if __name__ == "__main__":
+    score = 10  #Replace with a variable that stores speed
 
-fade_in_buttons(score)
-time.sleep(10)
+    display_end_score(score)
+    time.sleep(1)
 
-pygame.quit()
+    fade_in_buttons(score)
+    time.sleep(10)
+
+    pygame.quit()
