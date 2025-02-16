@@ -138,7 +138,7 @@ for x_pos in range(0, max_x_position, white_block_gap):
 # Function to create a new car
 def create_other_car():
     # Randomized Y position on the road
-    y_pos = random.randint(0, HEIGHT - 40)  # Ensure the car stays within the screen bounds
+    y_pos = random.randint(0, HEIGHT)  # Ensure the car stays within the screen bounds
     
     # Calculate the background speed and set the other cars' speed to a fixed offset
     speed_bg = car.speed * bg_speed_multiplier  # Speed of background
