@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -156,6 +157,169 @@ list_blocks = []
 
 final_block = WhiteBlock(max_x_position, 0)
 final_block.height = 1000
+
+##-------------------------------Starting Screen---------------------------------##
+pygame.display.set_caption("Fading Text with Button")
+
+# Colors
+BLUE = (50, 150, 255)
+GREEN = (0, 255, 0)
+GRAY = (200, 200, 200)
+DARK_GRAY = (100, 100, 100)
+
+# Font setup
+font_large = pygame.font.SysFont("arialblack", 70)  # Boom Productions
+font_small = pygame.font.SysFont("arial", 50)  # presents & Play button
+font_racing = pygame.font.SysFont("arialblack", 100)  # RACING! Title
+
+# Function to fade out text
+def fade_out_texts(texts, colors, positions, fonts, fade_speed):
+    alpha = 255
+    text_surfaces = [fonts[i].render(texts[i], True, colors[i]).convert_alpha() for i in range(len(texts))]
+
+    while alpha > 0:
+        screen.fill(BLUE)
+
+        for i in range(len(texts)):
+            text_surfaces[i].set_alpha(alpha)
+            screen.blit(text_surfaces[i], text_surfaces[i].get_rect(center=positions[i]))
+
+        pygame.display.update()
+        time.sleep(fade_speed)
+        alpha -= 5
+
+# Function to fade in the Play button
+def fade_in_button():
+    button_rect = pygame.Rect(WIDTH//2 - 100, HEIGHT//2 + 50, 200, 80)
+    play_text = font_small.render("Play", True, DARK_GRAY)
+    
+    alpha = 0  # Start fully transparent
+    running = True
+    screen.fill(BLUE)
+    
+    while running:
+
+        # Keep "RACING!" visible
+        racing_text = font_racing.render("RACING!", True, GREEN)
+        screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
+
+        # Increase alpha to fade in
+        if alpha < 255:
+            alpha += 5
+        play_surface = play_text.copy()
+        play_surface.set_alpha(alpha)
+
+        # Draw button
+        pygame.draw.rect(screen, GRAY, button_rect, border_radius=10)
+        screen.blit(play_surface, play_surface.get_rect(center=button_rect.center))
+
+        pygame.display.update()
+        time.sleep(0.05)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_rect.collidepoint(event.pos):
+                    running = False  # Exit loop when Play is clicked
+                    return True
+
+def run_start_screen():
+    screen.fill(BLUE)
+    fade_out_texts(
+        ["Boom Productions", "presents"], 
+        [WHITE, WHITE], 
+        [(WIDTH//2, HEIGHT//3), (WIDTH//2, HEIGHT//3 + 80)], 
+        [font_large, font_small], 
+        0.05
+    )
+    racing_text = font_racing.render("RACING!", True, GREEN)
+    screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
+    pygame.display.update()
+    time.sleep(2)  # Delay before showing the button
+
+    start = fade_in_button()  # Wait until Play is clicked
+    return start
+
+run_start_screen()
+#----------------------------------End of Starting Screen---------------------------------#
+
+#----------------------------------End of Game Screen---------------------------------#
+
+def end_game():
+    pygame.display.set_caption("Displaying Score")
+    # Font setup
+    font_large = pygame.font.SysFont("arialblack", 70)  # Boom Productions
+    font_small = pygame.font.SysFont("arial", 50)  # presents & Play button
+
+def display_end_score(score):
+    screen.fill(BLUE)
+    
+    score_text = "Score: "
+    score_obj = font_small
+    score_txt = score_obj.render(("Score: " + str(score)), 1, WHITE )
+    screen.blit(score_txt, (WIDTH//2 - 120, HEIGHT//2 - 100))
+    pygame.display.update()
+    
+    for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+
+def fade_in_buttons(score):
+    play_button_rect = pygame.Rect(WIDTH//4 - 150, HEIGHT//2 + 50, 300, 80)
+    quit_button_rect = pygame.Rect(3*WIDTH//4 - 150 , HEIGHT//2 + 50, 300, 80)
+
+    play_text = font_small.render("Play Again", True, DARK_GRAY)
+    quit_text = font_small.render("Quit", True, DARK_GRAY)
+    
+    alpha = 0  # Start fully transparent
+    running = True
+    screen.fill(BLUE)
+    display_end_score(score)
+    while running:
+
+        # Keep "RACING!" visible
+
+        # Increase alpha to fade in
+        if alpha < 255:
+            alpha += 10
+        play_surface = play_text.copy()
+        play_surface.set_alpha(alpha)
+
+        quit_surface = quit_text.copy()
+        quit_surface.set_alpha(alpha)
+
+        # Draw button
+        pygame.draw.rect(screen, GRAY, play_button_rect, border_radius=10)
+        screen.blit(play_surface, play_surface.get_rect(center=play_button_rect.center))
+
+        pygame.draw.rect(screen, GRAY, quit_button_rect, border_radius=10)
+        screen.blit(quit_surface, quit_surface.get_rect(center=quit_button_rect.center))
+
+        pygame.display.update()
+        time.sleep(0.1)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # Exit the game when Esc key is pressed
+                    pygame.quit()
+                    return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button_rect.collidepoint(event.pos):
+                    running = False  # Exit loop when Play is clicked
+                    return True
+                if quit_button_rect.collidepoint(event.pos):
+                    running = False
+                    return False
+
+#--------------------------------------------------------------------------------------#
+
 while running:
     delta_time = clock.tick(60) / 1000  # Calculate delta time (time in seconds since the last frame)
     
@@ -170,6 +334,22 @@ while running:
     distance_travelled += car.speed * delta_time
     if distance_travelled >= max_x_position:
         running = False  # End the game after 24000 pixels have been traveled
+        end_game()
+        score = int(distance_travelled)  # Calculate the final score
+        play_again = fade_in_buttons(score)  # Display the score and fade in the Play Again button
+        
+        if play_again:
+            # Reset max_x_position to its original value
+            max_x_position = 24000
+            # Re-create the white blocks list with the correct positions
+            white_blocks.clear()
+            for x_pos in range(0, max_x_position, white_block_gap):
+                white_blocks.append(WhiteBlock(x_pos, middle_y))
+            final_block = WhiteBlock(max_x_position, 0)
+            final_block.height = 1000
+            distance_travelled = 0  # Reset the distance traveled
+            running = True # Restart the game if Play Again is clicked
+
 
     # Get the keys pressed by the player
     keys = pygame.key.get_pressed()
@@ -216,6 +396,20 @@ while running:
         # Check for collision with the player's car
         if car.get_rect().colliderect(other_car.get_rect()):
             running = False  # End the game on collision
+            end_game()
+            score = int(distance_travelled)  # Calculate the final score
+            play_again = fade_in_buttons(score)  # Display the score and fade in the Play Again button
+            if play_again:
+                # Reset max_x_position to its original value
+                max_x_position = 24000
+                # Re-create the white blocks list with the correct positions
+                white_blocks.clear()
+                for x_pos in range(0, max_x_position, white_block_gap):
+                    white_blocks.append(WhiteBlock(x_pos, middle_y))
+                final_block = WhiteBlock(max_x_position, 0)
+                final_block.height = 1000
+                distance_travelled = 0  # Reset the distance traveled
+                running = True  # Restart the game
 
     # Occasionally spawn a new car
     if random.random() < 0.02:  # Increase the frequency of car spawns

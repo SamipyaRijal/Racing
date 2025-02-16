@@ -44,9 +44,9 @@ def fade_in_button():
     
     alpha = 0  # Start fully transparent
     running = True
+    screen.fill(BLUE)
     
     while running:
-        screen.fill(BLUE)
 
         # Keep "RACING!" visible
         racing_text = font_racing.render("RACING!", True, GREEN)
@@ -72,6 +72,7 @@ def fade_in_button():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_rect.collidepoint(event.pos):
                     running = False  # Exit loop when Play is clicked
+                    return True
 
 # Run the fade-in/fade-out sequence
 screen.fill(BLUE)
@@ -85,14 +86,24 @@ fade_out_texts(
     0.05
 )
 
-# "RACING!" stays on screen
-screen.fill(BLUE)
-racing_text = font_racing.render("RACING!", True, GREEN)
-screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
-pygame.display.update()
-time.sleep(2)  # Short delay before the button appears
+def run_start_screen():
+    screen.fill(BLUE)
+    fade_out_texts(
+        ["Boom Productions", "presents"], 
+        [WHITE, WHITE], 
+        [(WIDTH//2, HEIGHT//3), (WIDTH//2, HEIGHT//3 + 80)], 
+        [font_large, font_small], 
+        0.05
+    )
+    racing_text = font_racing.render("RACING!", True, GREEN)
+    screen.blit(racing_text, racing_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100)))
+    pygame.display.update()
+    time.sleep(2)  # Delay before showing the button
 
-# Play button fades in
-fade_in_button()
+    start = fade_in_button()  # Wait until Play is clicked
+    return start
 
-pygame.quit()
+if __name__ == "__main__":
+    # "RACING!" stays on screen
+    run_start_screen()
+    pygame.quit()
