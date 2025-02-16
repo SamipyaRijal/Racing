@@ -31,7 +31,7 @@ FINISH_LINE_COLOR = (255, 215, 0)  # Gold color for the finish line
 
 # Load images
 car_image = pygame.image.load("car.png")  # Replace with the actual path to your car image
-evil_car_image = pygame.image.load("car.png")  # Load the evil car image
+evil_car_image = pygame.image.load("evilcar.png")  # Load the evil car image
 car_width, car_height = car_image.get_size()  # Get the original size of the car image
 
 # Resize the car to a new size (for example, 100x60)
