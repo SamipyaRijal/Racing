@@ -44,9 +44,9 @@ def fade_in_button():
     
     alpha = 0  # Start fully transparent
     running = True
+    screen.fill(BLUE)
     
     while running:
-        screen.fill(BLUE)
 
         # Keep "RACING!" visible
         racing_text = font_racing.render("RACING!", True, GREEN)
