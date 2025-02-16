@@ -232,10 +232,11 @@ while running:
         button_colour = getRed_or_Green()
 
         if button_colour == 'green':  # Speed up (A key)
-            car.speed = min(700, car.speed + 15)  # Cap speed at 15
+            car.speed = min(800, car.speed + 15)  # Cap speed at 15
         
         elif button_colour == 'red':  # Slow down (D key)
             car.speed = max(400, car.speed - 5)  # Prevent speed from going below 1 
+            car.speed = max(400, car.speed - 15)  # Prevent speed from going below 1 
 
         # Dynamically adjust obstacle speed based on car speed
         final_block.speed = car.speed
@@ -311,7 +312,7 @@ while running:
         while(1):
             if(ds.fade_in_buttons(distance_travelled)==True):
                 car_collied = False
-                car.x = 0
+                distance_travelled = 0
                 car.y = HEIGHT // 2 - car_height // 2
                 break
             elif(ds.fade_in_buttons(distance_travelled)==False):

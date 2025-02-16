@@ -46,7 +46,7 @@ def getRed_or_Green():
         return 'green'
     else:
         greenLED.setState(False)
-        return 'none'
+        return
 
 
 if __name__ == "__main__":
