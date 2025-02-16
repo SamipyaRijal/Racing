@@ -31,7 +31,7 @@ FINISH_LINE_COLOR = (255, 215, 0)  # Gold color for the finish line
 
 # Load images
 car_image = pygame.image.load("car.png")  # Replace with the actual path to your car image
-evil_car_image = pygame.image.load("evilcar.png")  # Load the evil car image
+evil_car_image = pygame.image.load("car.png")  # Load the evil car image
 car_width, car_height = car_image.get_size()  # Get the original size of the car image
 
 # Resize the car to a new size (for example, 100x60)
@@ -135,7 +135,7 @@ clock = pygame.time.Clock()
 
 # Constantly create white blocks at regular intervals from 0 to 1000000
 white_block_gap = 170  # Horizontal gap between blocks (larger gap for better spacing)
-max_x_position = 1000000  # Max X position (end of the generated range)
+max_x_position = 24000  # Max X position (end of the generated range)
 
 # Vertical position for the row of white blocks (in the center of the screen)
 middle_y = HEIGHT // 2 - 10  # The Y-coordinate for the row of blocks (center of screen)
@@ -144,30 +144,36 @@ middle_y = HEIGHT // 2 - 10  # The Y-coordinate for the row of blocks (center of
 for x_pos in range(0, max_x_position, white_block_gap):
     white_blocks.append(WhiteBlock(x_pos, middle_y))
 
+# Track the player's car position in terms of distance traveled
+distance_travelled = 0
+
 # Function to create a new car
 def create_other_car():
-    while True:  # Keep trying until a non-overlapping position is found
-        y_pos = random.randint(0, HEIGHT - evil_car_height)  # Ensure the car stays within the screen bounds
-        
-        # Check for overlap with other cars
-        overlap = False
-        for other_car in other_cars:
-            if pygame.Rect(0, y_pos, evil_car_width, evil_car_height).colliderect(other_car.get_rect()):
-                overlap = True
-                break  # If overlap occurs, break the loop and try again
+    x_pos = WIDTH  # Spawn the car off-screen to the right
+    if x_pos < max_x_position:  # Only create cars if they haven't passed the max_x_position
+        while True:
+            y_pos = random.randint(0, HEIGHT - evil_car_height)  # Random vertical position
+            overlap = False
+            
+            # Check for overlap with other cars
+            for other_car in other_cars:
+                if pygame.Rect(x_pos, y_pos, evil_car_width, evil_car_height).colliderect(other_car.get_rect()):
+                    overlap = True
+                    break
 
-        if not overlap:
-            # If no overlap is found, break the loop and create the car
-            speed_bg = car.speed * bg_speed_multiplier  # Speed of background
-            speed_offset = 200  # Offset for other cars, relative to the background speed
-            relative_speed = speed_bg - speed_offset  # Other cars move slower than background
-            other_cars.append(OtherCar(WIDTH, y_pos, relative_speed))
-            break  # Exit the loop after successfully creating a car
+            if not overlap:
+                speed_bg = car.speed * bg_speed_multiplier  # Speed of background
+                speed_offset = 200  # Offset for other cars relative to background speed
+                relative_speed = speed_bg - speed_offset  # Other cars move slower than background
+                other_cars.append(OtherCar(x_pos, y_pos, relative_speed))
+                break  # Exit loop after car is successfully created
 
 # Track distance traveled
 distance_travelled = 0
 list_blocks = []
 
+final_block = WhiteBlock(max_x_position, 0)
+final_block.height = 1000
 while running:
     delta_time = clock.tick(60) / 1000  # Calculate delta time (time in seconds since the last frame)
     
@@ -178,6 +184,10 @@ while running:
             if event.key == pygame.K_ESCAPE:  # Exit the game when Esc key is pressed
                 running = False
 
+    # Track distance traveled
+    distance_travelled += car.speed * delta_time
+    if distance_travelled >= max_x_position:
+        running = False  # End the game after 24000 pixels have been traveled
 
     # Get the keys pressed by the player
     keys = pygame.key.get_pressed()
@@ -194,6 +204,7 @@ while running:
     #------------------------------------------------------------------#
 
     # Dynamically adjust obstacle speed based on car speed
+    final_block.speed = car.speed
     for block in white_blocks:
         block.speed = car.speed
 
@@ -204,15 +215,14 @@ while running:
         other_car.speed = speed_bg - speed_offset  # Set other cars' speed relative to background
 
     # Move white blocks and remove those that are off the screen
+    final_block.move(delta_time)
     for block in white_blocks[:]:
         block.move(delta_time)
         if block.x + block.width < 0:  # If the block moves off the left side, reset its position
             # Move the block to the right, keeping the same gap between blocks
             block.x = white_blocks[-1].x + white_block_gap
-    list_blocks.append(block for block in white_blocks)
-    if len(list_blocks) >= 2400:
-        pygame.quit()
-        sys.exit()
+            
+
 
     # Move the other cars and check for collisions
     for other_car in other_cars[:]:
@@ -248,6 +258,7 @@ while running:
     screen.fill(DARK_GREY, (bg_x + bg_width, 0, WIDTH, HEIGHT))  # Repeat the background for a seamless effect
 
     # Draw the white blocks (scrolling from right to left)
+    final_block.draw()
     for block in white_blocks:
         block.draw()
 
