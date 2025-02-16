@@ -4,8 +4,7 @@ import random
 import os
 
 # Add the path to the folder containing slider_testing.py
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'Electrical Code', 'Testing'))
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'Electrical Code', 'Testing'))
 # Import the get_slider_value function from slider_testing.py
 from slider_testing import get_slider_value
 from button_testing import getRed_or_Green
