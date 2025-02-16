@@ -286,6 +286,8 @@ while running:
         while(1):
             if(ds.fade_in_buttons(score=10)==True):
                 car_collied = False
+                car.x = 0
+                car.y = HEIGHT // 2 - car_height // 2
                 break
             elif(ds.fade_in_buttons(score=10)==False):
                 running = False
