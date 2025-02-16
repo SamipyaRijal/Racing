@@ -18,16 +18,23 @@ BLACK = (0, 0, 0)
 DARK_GREY = (50, 50, 50)
 TRACK_EDGE_COLOR = (200, 200, 200)  # Color of the track edges (like lane lines)
 CAR_COLOR = (255, 0, 0)  # Color of other cars (red for visibility)
+FINISH_LINE_COLOR = (255, 215, 0)  # Gold color for the finish line
 
 # Load images
 car_image = pygame.image.load("car.png")  # Replace with the actual path to your car image
+evil_car_image = pygame.image.load("evilcar.png")  # Load the evil car image
 car_width, car_height = car_image.get_size()  # Get the original size of the car image
 
 # Resize the car to a new size (for example, 100x60)
-new_car_width = 100
-new_car_height = 60
+new_car_width = 150
+new_car_height = 80
 car_image = pygame.transform.scale(car_image, (new_car_width, new_car_height))  # Resize the car image
 car_width, car_height = car_image.get_size()  # Update the width and height of the resized car
+
+# Resize the evil car image to the same size as the player car
+evil_car_width = 150
+evil_car_height = 80
+evil_car_image = pygame.transform.scale(evil_car_image, (evil_car_width, evil_car_height))
 
 # Define the Car class
 class Car:
@@ -57,8 +64,8 @@ class WhiteBlock:
     def __init__(self, x, y):
         self.x = x  # X position of the block
         self.y = y  # Y position of the block
-        self.width = 20  # Width of each white block
-        self.height = 20  # Height of each white block
+        self.width = 80  # Width of each white block (make them wide)
+        self.height = 15  # Height of each white block
         self.speed = 200  # This will be updated based on car speed (in pixels/s)
 
     def move(self, delta_time):
@@ -76,8 +83,8 @@ class OtherCar:
     def __init__(self, x, y, speed):
         self.x = x  # X position of the car (start from the right side)
         self.y = y  # Y position of the car (randomized vertical position)
-        self.width = 60  # Width of each other car
-        self.height = 40  # Height of each other car
+        self.width = evil_car_width  # Width of each other car
+        self.height = evil_car_height  # Height of each other car
         self.speed = speed  # Speed of the car relative to the player's car (in pixels/s)
 
     def move(self, delta_time):
@@ -85,7 +92,8 @@ class OtherCar:
         self.x -= self.speed * delta_time
 
     def draw(self):
-        pygame.draw.rect(screen, CAR_COLOR, (self.x, self.y, self.width, self.height))
+        # Draw the evil car image for the other cars
+        screen.blit(evil_car_image, (self.x, self.y))
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
@@ -107,9 +115,9 @@ bg_speed_multiplier = 1  # Set multiplier to 1 for direct correlation with car s
 running = True
 clock = pygame.time.Clock()
 
-# Constantly create white blocks at regular intervals from 0 to 100000
-white_block_gap = 60  # Horizontal gap between blocks
-max_x_position = 10000  # Max X position (end of the generated range)
+# Constantly create white blocks at regular intervals from 0 to 1000000
+white_block_gap = 170  # Horizontal gap between blocks (larger gap for better spacing)
+max_x_position = 24000  # Max X position (end of the generated range)
 
 # Vertical position for the row of white blocks (in the center of the screen)
 middle_y = HEIGHT // 2 - 10  # The Y-coordinate for the row of blocks (center of screen)
@@ -118,19 +126,36 @@ middle_y = HEIGHT // 2 - 10  # The Y-coordinate for the row of blocks (center of
 for x_pos in range(0, max_x_position, white_block_gap):
     white_blocks.append(WhiteBlock(x_pos, middle_y))
 
+# Track the player's car position in terms of distance traveled
+distance_travelled = 0
+
 # Function to create a new car
 def create_other_car():
-    # Randomized Y position on the road
-    y_pos = random.randint(0, HEIGHT - 40)  # Ensure the car stays within the screen bounds
-    
-    # Calculate the background speed and set the other cars' speed to a fixed offset
-    speed_bg = car.speed * bg_speed_multiplier  # Speed of background
-    speed_offset = 200  # Offset for other cars, relative to the background speed
-    relative_speed = speed_bg - speed_offset  # Other cars move slower than background
-    
-    # Add a new car to the list
-    other_cars.append(OtherCar(WIDTH, y_pos, relative_speed))
+    x_pos = WIDTH  # Spawn the car off-screen to the right
+    if x_pos < max_x_position:  # Only create cars if they haven't passed the max_x_position
+        while True:
+            y_pos = random.randint(0, HEIGHT - evil_car_height)  # Random vertical position
+            overlap = False
+            
+            # Check for overlap with other cars
+            for other_car in other_cars:
+                if pygame.Rect(x_pos, y_pos, evil_car_width, evil_car_height).colliderect(other_car.get_rect()):
+                    overlap = True
+                    break
 
+            if not overlap:
+                speed_bg = car.speed * bg_speed_multiplier  # Speed of background
+                speed_offset = 200  # Offset for other cars relative to background speed
+                relative_speed = speed_bg - speed_offset  # Other cars move slower than background
+                other_cars.append(OtherCar(x_pos, y_pos, relative_speed))
+                break  # Exit loop after car is successfully created
+
+# Track distance traveled
+distance_travelled = 0
+list_blocks = []
+
+final_block = WhiteBlock(max_x_position, 0)
+final_block.height = 1000
 while running:
     delta_time = clock.tick(60) / 1000  # Calculate delta time (time in seconds since the last frame)
     
@@ -140,6 +165,11 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:  # Exit the game when Esc key is pressed
                 running = False
+
+    # Track distance traveled
+    distance_travelled += car.speed * delta_time
+    if distance_travelled >= max_x_position:
+        running = False  # End the game after 24000 pixels have been traveled
 
     # Get the keys pressed by the player
     keys = pygame.key.get_pressed()
@@ -152,26 +182,30 @@ while running:
 
     # Speed up or slow down the obstacles based on user input (A = faster, D = slower)
     if keys[pygame.K_a]:  # Speed up (A key)
-        car.speed = min(700, car.speed + 5)  # Cap speed at 600 pixels/s
+        car.speed = min(800, car.speed + 5)  # Cap speed at 600 pixels/s
     if keys[pygame.K_d]:  # Slow down (D key)
         car.speed = max(400, car.speed - 5)  # Prevent speed from going below 200 pixels/s
 
     # Dynamically adjust obstacle speed based on car speed
+    final_block.speed = car.speed
     for block in white_blocks:
         block.speed = car.speed
 
     # Update the speed of all other cars based on the current car speed
     speed_bg = car.speed * bg_speed_multiplier  # Calculate background speed
-    speed_offset = 50  # Offset for other cars
+    speed_offset = 200  # Offset for other cars
     for other_car in other_cars:
         other_car.speed = speed_bg - speed_offset  # Set other cars' speed relative to background
 
     # Move white blocks and remove those that are off the screen
+    final_block.move(delta_time)
     for block in white_blocks[:]:
         block.move(delta_time)
         if block.x + block.width < 0:  # If the block moves off the left side, reset its position
-            # Move the block to the right (start of the range)
-            block.x = max_x_position
+            # Move the block to the right, keeping the same gap between blocks
+            block.x = white_blocks[-1].x + white_block_gap
+            
+
 
     # Move the other cars and check for collisions
     for other_car in other_cars[:]:
@@ -184,7 +218,7 @@ while running:
             running = False  # End the game on collision
 
     # Occasionally spawn a new car
-    if random.random() < 0.07:  # Increase the frequency of car spawns
+    if random.random() < 0.02:  # Increase the frequency of car spawns
         create_other_car()
 
     # Move the background to create the illusion of motion (like the obstacles)
@@ -207,6 +241,7 @@ while running:
     screen.fill(DARK_GREY, (bg_x + bg_width, 0, WIDTH, HEIGHT))  # Repeat the background for a seamless effect
 
     # Draw the white blocks (scrolling from right to left)
+    final_block.draw()
     for block in white_blocks:
         block.draw()
 
@@ -223,5 +258,3 @@ while running:
 # Quit Pygame
 pygame.quit()
 sys.exit()
-
-
