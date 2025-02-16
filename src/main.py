@@ -47,7 +47,7 @@ class Car:
         self.speed = 5  # Speed of the car (this will control the obstacles' speed)
 
     def y_position(self):
-        joystick_ratio = HEIGHT
+        joystick_ratio = HEIGHT-20
         self.y = get_slider_value() * joystick_ratio
 
 
@@ -184,7 +184,7 @@ while running:
     button_colour = getRed_or_Green()
 
     if button_colour == 'green':  # Speed up (A key)
-        car.speed = min(700, car.speed + 5)  # Cap speed at 15
+        car.speed = min(700, car.speed + 15)  # Cap speed at 15
     elif button_colour == 'red':  # Slow down (D key)
         car.speed = max(400, car.speed - 5)  # Prevent speed from going below 1
 
