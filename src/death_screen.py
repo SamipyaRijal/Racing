@@ -28,7 +28,7 @@ def display_end_score(score):
     
     score_obj = font_small
     score_txt = score_obj.render((f"Score: {score:.2f}"), 1, WHITE )
-    screen.blit(score_txt, (WIDTH//2 - 120, HEIGHT//2 - 100))
+    screen.blit(score_txt, (WIDTH//2 - 140, HEIGHT//2 - 100))
     pygame.display.update()
     
     for event in pygame.event.get():
