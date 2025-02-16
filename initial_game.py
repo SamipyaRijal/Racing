@@ -22,7 +22,7 @@ FINISH_LINE_COLOR = (255, 215, 0)  # Gold color for the finish line
 
 # Load images
 car_image = pygame.image.load("car.png")  # Replace with the actual path to your car image
-evil_car_image = pygame.image.load("evilcar.png")  # Load the evil car image
+evil_car_image = pygame.image.load("car.png")  # Load the evil car image
 car_width, car_height = car_image.get_size()  # Get the original size of the car image
 
 # Resize the car to a new size (for example, 100x60)
@@ -160,6 +160,11 @@ while running:
             if event.key == pygame.K_ESCAPE:  # Exit the game when Esc key is pressed
                 running = False
 
+    # Track distance traveled
+    distance_travelled += car.speed * delta_time
+    if distance_travelled >= 4800:
+        running = False  # End the game after 24000 pixels have been traveled
+
     # Get the keys pressed by the player
     keys = pygame.key.get_pressed()
 
@@ -192,9 +197,7 @@ while running:
             # Move the block to the right, keeping the same gap between blocks
             block.x = white_blocks[-1].x + white_block_gap
     list_blocks.append(block for block in white_blocks)
-    if len(list_blocks) >= 2400:
-        pygame.quit()
-        sys.exit()
+
 
     # Move the other cars and check for collisions
     for other_car in other_cars[:]:
