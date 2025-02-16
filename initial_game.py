@@ -148,7 +148,7 @@ def create_other_car():
 
 # Track distance traveled
 distance_travelled = 0
-FINISH_LINE_X = 10000  # Set finish line at 10,000 pixels
+list_blocks = []
 
 while running:
     delta_time = clock.tick(60) / 1000  # Calculate delta time (time in seconds since the last frame)
@@ -191,6 +191,10 @@ while running:
         if block.x + block.width < 0:  # If the block moves off the left side, reset its position
             # Move the block to the right, keeping the same gap between blocks
             block.x = white_blocks[-1].x + white_block_gap
+    list_blocks.append(block for block in white_blocks)
+    if len(list_blocks) >= 2400:
+        pygame.quit()
+        sys.exit()
 
     # Move the other cars and check for collisions
     for other_car in other_cars[:]:
@@ -235,14 +239,6 @@ while running:
 
     # Draw the player's car
     car.draw()
-
-    # Draw the finish line at the specified position (10,000 pixels)
-    pygame.draw.line(screen, FINISH_LINE_COLOR, (FINISH_LINE_X, 0), (FINISH_LINE_X, HEIGHT), 5)
-
-    # Check if the car has crossed the finish line
-    if car.x + car.width >= FINISH_LINE_X:
-        print("Congratulations! You reached the finish line!")
-        running = False
 
     # Update the display
     pygame.display.flip()
