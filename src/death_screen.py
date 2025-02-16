@@ -22,11 +22,12 @@ font_large = pygame.font.SysFont("arialblack", 70)  # Boom Productions
 font_small = pygame.font.SysFont("arial", 50)  # presents & Play button
 
 def display_end_score(score):
+    int(score)
+
     screen.fill(BLUE)
     
-    score_text = "Score: "
     score_obj = font_small
-    score_txt = score_obj.render(("Score: " + str(score)), 1, WHITE )
+    score_txt = score_obj.render((f"Score: {score:.2f}"), 1, WHITE )
     screen.blit(score_txt, (WIDTH//2 - 120, HEIGHT//2 - 100))
     pygame.display.update()
     
@@ -37,6 +38,8 @@ def display_end_score(score):
 
 
 def fade_in_buttons(score):
+    int(score)
+
     play_button_rect = pygame.Rect(WIDTH//4 - 150, HEIGHT//2 + 50, 300, 80)
     quit_button_rect = pygame.Rect(3*WIDTH//4 - 150 , HEIGHT//2 + 50, 300, 80)
 
